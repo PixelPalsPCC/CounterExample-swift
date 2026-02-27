@@ -1,0 +1,6 @@
+format_version = 2
+
+[apps.CounterExample]
+identifier = 'com.example.CounterExample'
+product = 'CounterExample'
+version = '0.1.0'
