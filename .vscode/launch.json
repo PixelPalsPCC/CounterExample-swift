@@ -6,14 +6,33 @@
             "name": "Build and Run CounterExample",
             "command": "swift build && .build/debug/CounterExample",
             "cwd": "${workspaceFolder:CounterExample}"
-        }
-        ,
+        },
         {
             "type": "node-terminal",
             "request": "launch",
             "name": "Run CounterExample",
             "command": ".build/debug/CounterExample",
             "cwd": "${workspaceFolder:CounterExample}"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:CounterExample-swift}",
+            "name": "Debug CounterExample",
+            "preLaunchTask": "swift: Build Debug CounterExample",
+            "target": "CounterExample",
+            "configuration": "debug"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:CounterExample-swift}",
+            "name": "Release CounterExample",
+            "preLaunchTask": "swift: Build Release CounterExample",
+            "target": "CounterExample",
+            "configuration": "release"
         }
     ]
 }
