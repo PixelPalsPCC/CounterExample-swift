@@ -1,0 +1,233 @@
+import DefaultBackend
+import Foundation  // for sin, cos
+import SwiftCrossUI
+
+#if canImport(SwiftBundlerRuntime)
+    import SwiftBundlerRuntime
+#endif
+
+#if canImport(GtkBackend)
+    import Gtk
+#endif
+
+extension Notification.Name {
+    static let gtkMouseMotion = Notification.Name("gtkMouseMotion")
+}
+struct ArcShape: StyledShape {
+    var startAngle: Double
+    var endAngle: Double
+    var clockwise: Bool
+
+    var strokeColor: SwiftCrossUI.Color? = SwiftCrossUI.Color.black
+    let fillColor: SwiftCrossUI.Color? = nil
+    let strokeStyle: StrokeStyle? = StrokeStyle(width: 5.0)
+
+    func path(in bounds: Path.Rect) -> Path {
+        Path()
+            .addArc(
+                center: bounds.center,
+                radius: min(bounds.width, bounds.height) / 2.0 - 2.5,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                clockwise: clockwise
+            )
+    }
+
+    func size(fitting proposal: SIMD2<Int>) -> ViewSize {
+        let diameter = Double(max(11, min(proposal.x, proposal.y)))
+        return ViewSize(diameter, diameter)
+    }
+}
+
+@main
+@HotReloadable
+struct CounterApp: App {
+    @State var count: Double = 3
+    @State var mousePosition: CGPoint = CGPoint(x: 0, y: 0)
+
+    var body: some Scene {
+        WindowGroup("CounterExample: \(count)") {
+            #hotReloadable {
+
+                ZStack {
+                    HStack {
+                        Circle()
+                            .fill(SwiftCrossUI.Color.yellow)
+                            .frame(width: 400, height: 400)
+                        Spacer()
+                    }
+                    HStack {
+                        Circle()
+                            .stroke(SwiftCrossUI.Color.red)
+                            .frame(width: 400, height: 400)
+                        Spacer()
+                    }
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 105)
+                        HStack(spacing: 0) {
+                            Spacer().frame(width: 133)
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(SwiftCrossUI.Color.black)
+                                .frame(width: 50, height: 50)
+                            Spacer().frame(width: 62)
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(SwiftCrossUI.Color.black)
+                                .frame(width: 50, height: 50)
+                            Spacer().frame(width: 133)
+                        }
+                        Spacer()
+                    }
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 200)
+                        VStack {
+
+                            ArcShape(
+                                startAngle: Double.pi,
+                                endAngle: Double.pi,
+                                clockwise: true
+                            )
+                        }
+                        Spacer()
+                    }
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 200)
+                        VStack {
+
+                            ArcShape(
+                                startAngle: Double.pi * abs(count - 1) / 6,
+                                endAngle: Double.pi * abs(count + 1) / 6,
+                                clockwise: true
+                            )
+                        }
+                        Spacer()
+                    }
+
+                  
+                    VStack(spacing: 16) {
+                        Rectangle()
+                            .frame(width: 25, height: 4)
+                    }
+
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 200)
+                        VStack {
+
+                        }
+                        Spacer()
+                    }
+
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: 105)
+                        VStack {
+                            HStack(spacing: 50) {
+                                Button("*") {
+                                    if count < 5 {
+                                        count += 1
+                                    }
+                                }
+                                .padding()
+                                Button("*") {
+                                    if count > 1 {
+                                        count -= 1
+                                    }
+                                }
+                                .padding()
+
+                            }
+                            Spacer().frame(width:300,height: 205)
+                            HStack(spacing: 300) {
+                                Spacer()
+                                VStack {
+                                    Text("Sway: \(count)")
+                                        .foregroundColor(SwiftCrossUI.Color.white)
+                                        .font(.caption)
+                                    Text("Mouse: \(mousePosition.x) \(mousePosition.y)")
+                                        .foregroundColor(SwiftCrossUI.Color.white)
+                                        .font(.caption)
+                                }
+                                
+                            }
+                            .padding()
+                        }
+                        Spacer()
+                    }
+                    SwiftCrossUI.Color.clear
+                        .frame(width: 400, height: 400)
+                        .onHover { _ in }
+                }
+                .frame(height: 400)
+                .background(SwiftCrossUI.Color.black)
+                .onAppear {
+                    NotificationCenter.default.addObserver(
+                        forName: .gtkMouseMotion, object: nil, queue: .main
+                    ) { note in
+                        guard let pos = note.object as? CGPoint else { return }
+                        DispatchQueue.main.async {
+                            mousePosition = pos
+                            Events.eventExample1.emit(Example1Params(mousePosition: pos))
+                        }
+                    }
+                }
+            }
+        }
+        .defaultSize(width: 400, height: 400)
+    }
+}
+
+
+class EventWithParam<T> {
+    let className: String
+    private let name = NSNotification.Name(UUID().uuidString)
+
+    init(_ className: String) {
+        self.className = className
+    }
+
+   @discardableResult
+    func listen(_ cb: @escaping (T) -> Void) -> () -> Void {
+        let observer = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { obj in
+            print("listening in \(self.className)")
+            cb(obj.object as! T)
+        }
+        return { NotificationCenter.default.removeObserver(observer) }
+    }
+    
+    func emit(_ obj: T) {
+        NotificationCenter.default.post(name: name, object: obj)
+    }
+}
+
+
+struct Example1Params {
+    var mousePosition: CGPoint
+}
+
+class _Events {
+    static let shared = _Events()
+    let eventExample1 = EventWithParam<Example1Params>("example 1")
+    let eventExample2 = Event("example 2")
+}
+
+let Events = _Events.shared
+
+class Event {
+    let className: String
+    private let name = NSNotification.Name(UUID().uuidString)
+    
+    init(_ className: String) {
+        self.className = className
+    }
+
+    @discardableResult
+    func listen(_ cb: @escaping () -> Void) -> () -> Void {
+        let observer = NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
+            print("listen in \(self.className)")
+            cb()
+        }
+        return { NotificationCenter.default.removeObserver(observer) }
+    }
+
+    func emit() {
+        NotificationCenter.default.post(name: name, object: nil)
+    }
+}

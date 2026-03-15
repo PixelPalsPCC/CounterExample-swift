@@ -1,24 +1,19 @@
 {
     "configurations": [
         {
-            "type": "swift",
+            "type": "node-terminal",
             "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:CounterExample}",
-            "name": "Debug CounterExample",
-            "preLaunchTask": "swift: Build Debug CounterExample",
-            "target": "CounterExample",
-            "configuration": "debug"
-        },
+            "name": "Build and Run CounterExample",
+            "command": "swift build && .build/debug/CounterExample",
+            "cwd": "${workspaceFolder:CounterExample}"
+        }
+        ,
         {
-            "type": "swift",
+            "type": "node-terminal",
             "request": "launch",
-            "args": [],
-            "cwd": "${workspaceFolder:CounterExample}",
-            "name": "Release CounterExample",
-            "preLaunchTask": "swift: Build Release CounterExample",
-            "target": "CounterExample",
-            "configuration": "release"
+            "name": "Run CounterExample",
+            "command": ".build/debug/CounterExample",
+            "cwd": "${workspaceFolder:CounterExample}"
         }
     ]
 }

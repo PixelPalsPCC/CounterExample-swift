@@ -6,10 +6,11 @@ let package = Package(
     name: "CounterExample",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .macCatalyst(.v13)],
     dependencies: [
-        .package(
-            url: "https://github.com/stackotter/swift-cross-ui",
-            revision: "684b714410155223b9f54ca9d74867406c70009d"
-        )
+        .package(url: "https://github.com/moreSwift/swift-cross-ui", branch: "main")
+        // .package(
+        //     url: "https://github.com/stackotter/swift-cross-ui",
+        //     revision: "684b714410155223b9f54ca9d74867406c70009d"
+        // )
     ],
     targets: [
         .executableTarget(
@@ -17,7 +18,8 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftCrossUI", package: "swift-cross-ui"),
                 .product(name: "DefaultBackend", package: "swift-cross-ui")
-            ]
+            ],
+            resources: [.copy("Banner.png")]
         )
     ]
 )

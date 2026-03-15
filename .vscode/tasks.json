@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "swift",
+			"args": [
+				"build",
+				"--product",
+				"CounterExample"
+			],
+			"env": {},
+			"cwd": "/home/georgemck/Documents/htdocs/ws-swift/CounterExample",
+			"disableTaskQueue": true,
+			"dontTriggerTestDiscovery": true,
+			"group": "build",
+			"problemMatcher": [],
+			"label": "swift: Build Debug CounterExample (CounterExample)",
+			"detail": "swift build --product CounterExample"
+		}
+	]
+}
