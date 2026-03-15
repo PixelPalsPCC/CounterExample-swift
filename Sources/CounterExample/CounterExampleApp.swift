@@ -102,19 +102,22 @@ struct CounterApp: App {
                         Spacer().frame(height: 105)
                         VStack {
                             HStack(spacing: 50) {
+                                Spacer()
                                 Button("*") {
                                     if count < 5 {
                                         count += 1
                                     }
                                 }
-                                .padding()
+                                .frame(width: 60, height: 60)
+                                .font(.system(size: 20))
                                 Button("*") {
                                     if count > 1 {
                                         count -= 1
                                     }
                                 }
-                                .padding()
-
+                                .frame(width: 60, height: 60)
+                                .font(.system(size: 20))
+                                Spacer()
                             }
                             Spacer().frame(width: 300, height: 205)
                             HStack(spacing: 300) {
